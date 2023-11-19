@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatOTP Web Client (Beta)</title>
+    <link rel="stylesheet" href="./src/css/index.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script type="module" src="/src/elements/top-bar.js"></script>
+    <script type="module" src="/src/elements/chat-container.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script type="module" src="/src/js/index.js"></script>
+    <script type="module" src="/src/js/crypt.js"></script>
+  </head>
+  <body>
+    <div class="root">
+      <top-bar slot="top-bar"></top-bar>
+      <chat-container></chat-container>
+    </div>
+  </body>
+</html>
