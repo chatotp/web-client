@@ -12,6 +12,7 @@ export class ChatContainer extends LitElement {
         this.addEventListener('onmessage', this.handleMessageEvent);
         this.addEventListener('onjoin', this.handleJoinEvent);
         this.addEventListener('ontoggle', this.handleToggleOnEvent);
+        this.addEventListener('onfilesent', this.handleFileSentEvent);
         this.addEventListener('onfilereceived', this.handleFileReceivedEvent);
     }
 
@@ -69,6 +70,7 @@ export class ChatContainer extends LitElement {
         document.addEventListener("onmessage", this.handleMessage.bind(this));
         document.addEventListener("onjoin", this.handleJoin.bind(this));
         document.addEventListener("ontoggle", this.handleToggleOnEvent.bind(this));
+        document.addEventListener("onfilesent", this.handleFileSentEvent.bind(this));
         document.addEventListener("onfilereceived", this.handleFileReceivedEvent.bind(this));
       }
     
@@ -77,21 +79,24 @@ export class ChatContainer extends LitElement {
         document.removeEventListener("onmessage", this.handleMessage.bind(this));
         document.removeEventListener("onjoin", this.handleJoin.bind(this));
         document.removeEventListener("ontoggle", this.handleToggleOnEvent.bind(this));
+        document.removeEventListener("onfilesent", this.handleFileSentEvent.bind(this));
         document.removeEventListener("onfilereceived", this.handleFileReceivedEvent.bind(this));
     }
 
     handleMessage(event) {
         // Check if the event is the "message" event
         const { user, message } = event.detail;
-        this.messages = [...this.messages, { user, message }];
+        this.messages = [...this.messages, { user, type:"message", message }];
         this.requestUpdate();
+        this.scrollToBottom();
     }
 
     handleJoin(event) {
         const { user } = event.detail;
         let joinmsg = user + " has joined the chat!";
-        this.messages = [...this.messages, { joinmsg }];
+        this.messages = [...this.messages, { type:"message", joinmsg }];
         this.requestUpdate();
+        this.scrollToBottom();
     }
 
     handleToggleOnEvent(event) {
@@ -102,23 +107,33 @@ export class ChatContainer extends LitElement {
         this.shadowRoot.querySelector('#message-input').focus();
     }
 
-    handleFileReceivedEvent(event) {
+    handleFileSentEvent(event) {
         // detail only contains hash of file
-        const { fileName, fileHash } = event.detail;
-        this.messages = [...this.messages, { user: "You", type: 'file', fileName: fileName, hash: fileHash }];
+        const { fileName, hash } = event.detail;
+        this.messages = [...this.messages, { user: "You", type: 'file', fileName: fileName, hash: hash }];
         this.requestUpdate();
+        this.scrollToBottom();
+    }
+
+    handleFileReceivedEvent(event) {
+        const { user, fileName, hash } = event.detail;
+        this.messages = [...this.messages, { user: user, type: 'file', fileName: fileName, hash: hash }];
+        this.requestUpdate();
+        this.scrollToBottom();
     }
 
     _handleButtonClick() {
         const message = this.shadowRoot.querySelector('#message-input').value;
         
-        const onSendEvent = new CustomEvent('onsend', { detail: { message } });
-        document.dispatchEvent(onSendEvent);
+        if (message.length > 0) {
+            const onSendEvent = new CustomEvent('onsend', { detail: { message } });
+            document.dispatchEvent(onSendEvent);
 
-        const onMessageEvent = new CustomEvent('onmessage', { detail: { user: 'You', message } });
-        document.dispatchEvent(onMessageEvent);
-        this.shadowRoot.querySelector('#message-input').reset();
-        this.shadowRoot.querySelector('#message-input').focus()
+            const onMessageEvent = new CustomEvent('onmessage', { detail: { user: 'You', message } });
+            document.dispatchEvent(onMessageEvent);
+            this.shadowRoot.querySelector('#message-input').reset();
+            this.shadowRoot.querySelector('#message-input').focus()
+        }
     }
 
     _handleKeyDown(event) {
@@ -135,7 +150,7 @@ export class ChatContainer extends LitElement {
             const file = e.target.files[0];
 
             // Calculate SHA256 hash of the file
-            const fileHash = await this.calculateSHA256(file);
+            const hash = await this.calculateSHA256(file);
             
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -149,7 +164,7 @@ export class ChatContainer extends LitElement {
                 // Create FormData to append file and hash
                 const formData = new FormData();
                 formData.append('file', blob, file.name);
-                formData.append('hash', fileHash);
+                formData.append('hash', hash);
 
                 try {
                     const response = await fetch(`https://${domain}:${port}/api/upload`, {
@@ -159,8 +174,8 @@ export class ChatContainer extends LitElement {
 
                     if (response.ok) {
                         const fileName = file.name;
-                        const onFileReceivedEvent = new CustomEvent('onfilereceived', { detail: { fileName, fileHash } });
-                        document.dispatchEvent(onFileReceivedEvent);
+                        const onfilesentEvent = new CustomEvent('onfilesent', { detail: { fileName, hash } });
+                        document.dispatchEvent(onfilesentEvent);
                     } else {
                         console.error('Failed to upload file:', response.status, response.text());
                     }
@@ -177,6 +192,11 @@ export class ChatContainer extends LitElement {
         // on click, download file
         const downloadLink = `https://${domain}:${port}/api/download/${hash}\?name=${name}`;
         window.open(downloadLink, '_blank');
+    }
+
+    scrollToBottom() {
+        const messageContainer = this.shadowRoot.querySelector('.content');
+        messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 
     async calculateSHA256(file) {

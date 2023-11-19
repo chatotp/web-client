@@ -10,7 +10,6 @@ class Cipher {
             const newCharCode = charCode ^ this.key[i % this.key.length];
             result.push(newCharCode);
         }
-        console.log(result);
         return result;
     }
 

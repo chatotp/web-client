@@ -97,3 +97,13 @@ document.addEventListener('onpyswitchpositionchanged', (event) => {
     start();
     console.log("Switched to port " + port);
 });
+
+document.addEventListener('onfilesent', (event) => {
+    const { fileName, hash } = event.detail;
+    connection.invoke("SendFile", user, fileName, hash);
+})
+
+connection.on("ReceiveFile", (user, fileName, hash) => {
+    const onFileEvent = new CustomEvent('onfilereceived', { detail: { user, fileName, hash }});
+    document.dispatchEvent(onFileEvent);
+})
