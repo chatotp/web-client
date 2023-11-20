@@ -5,9 +5,6 @@ export default defineConfig({
     server: {
       port: 45002
     },
-    preview: {
-      port: 45002
-    },
     plugins: [
       basicSsl()
     ]

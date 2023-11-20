@@ -2,8 +2,8 @@ import Cipher from "./crypt";
 
 export const domain = 'localhost';
 export let port = '58684';
-let user = 'test';
-const algorithm = 4;
+let user = null;
+let algorithm = null;
 export let cipher = null;
 let connection = new signalR.HubConnectionBuilder()
     .withUrl(`https://${domain}:${port}/chat`)
@@ -12,37 +12,25 @@ let connection = new signalR.HubConnectionBuilder()
 let key = null; 
 let receivedMsg = null;
 
-async function start() {
-    try {
-        connection = new signalR.HubConnectionBuilder()
-        .withUrl(`https://${domain}:${port}/chat`)
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
+document.addEventListener("connect-event", async (event) => {
+    user = event.detail.username;
+    const selectedRadioValue = event.detail.selectedRadioValue;
 
+    algorithm = selectedRadioValue === "Xor" ? 3 : 4;
+
+    try {
         await connection.start();
         console.log("SignalR Connected.");
-        try {
-            await connection.invoke("Connect", user, algorithm);
-            await connection.invoke("SendJoinMsg", user)
+        await connection.invoke("Connect", user, algorithm);
+        await connection.invoke("SendJoinMsg", user);
 
-            // now turn on toggles
-            const onToggleEvent = new CustomEvent('ontoggle', { detail: { toggle: true }});
-            document.dispatchEvent(onToggleEvent);
-        } catch (err) {
-            console.error(err);
-        }
+        const onToggleEvent = new CustomEvent('ontoggle', { detail: { toggle: true }});
+        document.dispatchEvent(onToggleEvent);
     } catch (err) {
-        console.log(err);
+        console.error(err);
         setTimeout(start, 5000);
     }
-};
-
-connection.onclose(async () => {
-    await start();
 });
-
-// Start the connection.
-start();
 
 connection.on("JoinMessage", (user) => {
     const onJoinEvent = new CustomEvent('onjoin', { detail: { user }})

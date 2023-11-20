@@ -4,6 +4,7 @@ import { LitElement, css, html } from "lit";
 import '@material/web/textfield/outlined-text-field'
 import '@material/web/button/filled-tonal-button'
 import '@material/web/button/outlined-button'
+import '@material/web/icon/icon.js';
 
 export class ChatContainer extends LitElement {
     constructor() {
