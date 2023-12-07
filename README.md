@@ -4,8 +4,7 @@ ChatOTP is a chat protocol designed for anonymity and security through one-time 
 **Note:** This project was created as a part of term project for Cryptography and is not recommended for production purposes as of now.
 
 # ChatOTP web-client
-**(Note: Make sure you are running the server before running the web-client)**
-
+**(Note: Make sure you are running the server before running the web-client)**<br>
 This repository contains source code for ChatOTP Web-Client. The web-client uses SignalR for robust and faster connection between multiple clients and servers.
 
 ## Screenshots
