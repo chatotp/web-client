@@ -3,9 +3,18 @@ ChatOTP is a chat protocol designed for anonymity and security through one-time 
 
 **Note:** This project was created as a part of term project for Cryptography and is not recommended for production purposes as of now.
 
-## ChatOTP web-client
+# ChatOTP web-client
 **(Note: Make sure you are running the server before running the web-client)**
 This repository contains source code for ChatOTP Web-Client. The web-client uses SignalR for robust and faster connection between multiple clients and servers.
+
+## Screenshots
+On connection, the web-client asks the user for username and encryption algorithm (Xor by default). Only after username is given, the SignalR connection is done over client and server.
+
+![Options_Dialog](https://github.com/chatotp/web-client/assets/99819848/bf17b3ee-d850-49ad-9a14-9b637f7841f2)
+
+This is a beta screenshot during testing of chat application over multiple clients and file transfer
+
+![Inprogress_shot](https://github.com/chatotp/web-client/assets/99819848/2c1566e0-1f20-4e02-92ea-aca52b72de1e)
 
 ## Encryption Algorithms
 1. Xor Cipher
