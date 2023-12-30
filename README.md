@@ -10,7 +10,7 @@ This repository contains source code for ChatOTP Web-Client. The web-client uses
 ## Screenshots
 On connection, the web-client asks the user for username and encryption algorithm (Xor by default). Only after username is given, the SignalR connection is done over client and server.
 
-![Options_Dialog](https://github.com/chatotp/web-client/assets/99819848/bf17b3ee-d850-49ad-9a14-9b637f7841f2)
+![Options_Dialog](https://github.com/chatotp/web-client/assets/99819848/3eb48ff0-aa40-4a17-b21e-a86b3adc9556)
 
 This is a beta screenshot during testing of chat application over multiple clients and file transfer
 
